@@ -81,13 +81,28 @@ const Chat: React.FC = () => {
       athletic: '🏃‍♀️',
       curvy: '💃',
       slim: '🧘‍♀️',
-      plus: '🤗'
+      plus: '🤗',
+      muscular: '💪',
+      petite: '🌸'
     };
 
     const sizeClasses = size === 'sm' ? 'w-12 h-12 text-lg' : 'w-16 h-16 text-2xl';
+    
+    const skinTones = {
+      light: '#FDBCB4',
+      'medium-light': '#F1C27D',
+      medium: '#E0AC69',
+      'medium-dark': '#C68642',
+      dark: '#8D5524',
+      olive: '#C4A484'
+    };
 
     return (
-      <div className={`${sizeClasses} bg-gradient-to-b from-purple-100 to-pink-100 rounded-full flex items-center justify-center border-2 border-white shadow-sm`}>
+      <div className={`${sizeClasses} bg-gradient-to-b from-purple-100 to-pink-100 rounded-full flex items-center justify-center border-2 border-white shadow-sm relative overflow-hidden`}>
+        <div 
+          className="absolute inset-0 opacity-20 rounded-full"
+          style={{ backgroundColor: skinTones[avatar.skinTone as keyof typeof skinTones] || '#E0AC69' }}
+        />
         <span>{bodyEmojis[avatar.bodyType as keyof typeof bodyEmojis] || '👤'}</span>
       </div>
     );

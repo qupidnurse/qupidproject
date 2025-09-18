@@ -123,17 +123,34 @@ const Dashboard: React.FC = () => {
       athletic: '🏃‍♀️',
       curvy: '💃',
       slim: '🧘‍♀️',
-      plus: '🤗'
+      plus: '🤗',
+      muscular: '💪',
+      petite: '🌸'
+    };
+
+    const skinTones = {
+      light: '#FDBCB4',
+      'medium-light': '#F1C27D',
+      medium: '#E0AC69',
+      'medium-dark': '#C68642',
+      dark: '#8D5524',
+      olive: '#C4A484'
     };
 
     return (
-      <div className="w-32 h-40 mx-auto bg-gradient-to-b from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg">
-        <div className="text-center">
+      <div className="w-32 h-40 mx-auto bg-gradient-to-b from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg relative overflow-hidden">
+        {/* Background based on skin tone */}
+        <div 
+          className="absolute inset-0 opacity-20 rounded-2xl"
+          style={{ backgroundColor: skinTones[avatar.skinTone as keyof typeof skinTones] || '#E0AC69' }}
+        />
+        
+        <div className="text-center relative z-10">
           <div className="text-4xl mb-2">
             {bodyEmojis[avatar.bodyType as keyof typeof bodyEmojis] || '👤'}
           </div>
           <div className="text-xs text-gray-600 font-medium capitalize">
-            {avatar.skinTone}
+            {avatar.skinTone.replace('-', ' ')}
           </div>
           <div className="text-xs text-gray-600 capitalize">
             {avatar.hairStyle}

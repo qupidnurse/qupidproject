@@ -20,21 +20,72 @@ const Profile: React.FC = () => {
       athletic: '🏃‍♀️',
       curvy: '💃',
       slim: '🧘‍♀️',
-      plus: '🤗'
+      plus: '🤗',
+      muscular: '💪',
+      petite: '🌸'
+    };
+
+    const skinTones = {
+      light: '#FDBCB4',
+      'medium-light': '#F1C27D',
+      medium: '#E0AC69',
+      'medium-dark': '#C68642',
+      dark: '#8D5524',
+      olive: '#C4A484'
+    };
+
+    const outfitEmojis = {
+      casual: '👕',
+      business: '👔',
+      creative: '🎨',
+      athletic: '🏃‍♀️',
+      elegant: '✨',
+      bohemian: '🌻',
+      vintage: '📻',
+      streetwear: '🛹'
+    };
+
+    const accessoryEmojis = {
+      glasses: '👓',
+      sunglasses: '🕶️',
+      hat: '🎩',
+      cap: '🧢',
+      earrings: '💎',
+      necklace: '📿',
+      watch: '⌚',
+      scarf: '🧣'
     };
 
     return (
-      <div className="w-32 h-40 mx-auto bg-gradient-to-b from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg">
-        <div className="text-center">
+      <div className="w-32 h-40 mx-auto bg-gradient-to-b from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg relative overflow-hidden">
+        {/* Background based on skin tone */}
+        <div 
+          className="absolute inset-0 opacity-20 rounded-2xl"
+          style={{ backgroundColor: skinTones[profile.avatar.skinTone as keyof typeof skinTones] || '#E0AC69' }}
+        />
+        
+        <div className="text-center relative z-10">
           <div className="text-4xl mb-2">
             {bodyEmojis[profile.avatar.bodyType as keyof typeof bodyEmojis] || '👤'}
           </div>
           <div className="text-xs text-gray-600 font-medium capitalize">
-            {profile.avatar.skinTone}
+            {profile.avatar.skinTone.replace('-', ' ')}
           </div>
           <div className="text-xs text-gray-600 capitalize">
             {profile.avatar.hairStyle}
           </div>
+          {profile.avatar.accessories && profile.avatar.accessories.length > 0 && (
+            <div className="text-xs mt-1">
+              {profile.avatar.accessories.slice(0, 2).map(acc => 
+                accessoryEmojis[acc as keyof typeof accessoryEmojis]
+              ).join(' ')}
+            </div>
+          )}
+        </div>
+        
+        {/* Outfit indicator */}
+        <div className="absolute bottom-2 right-2 text-lg">
+          {outfitEmojis[profile.avatar.outfit as keyof typeof outfitEmojis] || '👕'}
         </div>
       </div>
     );
