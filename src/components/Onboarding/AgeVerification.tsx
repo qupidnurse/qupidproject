@@ -10,11 +10,9 @@ interface AgeVerificationProps {
 
 const AgeVerification: React.FC<AgeVerificationProps> = ({ onNext, onBack, canGoBack }) => {
   const [birthDate, setBirthDate] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { verifyAge, signup } = useAuth();
+  const { verifyAge, user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +28,6 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onNext, onBack, canGo
         return;
       }
 
-      // Create account
-      await signup(email, password);
-      
       // Calculate age for profile
       const birth = new Date(birthDate);
       const today = new Date();
@@ -40,9 +35,9 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onNext, onBack, canGo
       const monthDiff = today.getMonth() - birth.getMonth();
       const finalAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate()) ? age - 1 : age;
 
-      onNext({ age: finalAge, email });
+      onNext({ age: finalAge, email: user?.email });
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      setError('Age verification failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -68,35 +63,6 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onNext, onBack, canGo
       </div>
 
       <form onSubmit={handleSubmit} className="flex-1 space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address
-          </label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
-            placeholder="your@email.com"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
-            placeholder="Create a secure password"
-            minLength={6}
-          />
-        </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Date of Birth
@@ -129,10 +95,10 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onNext, onBack, canGo
 
         <button
           type="submit"
-          disabled={isLoading || !birthDate || !email || !password}
+          disabled={isLoading || !birthDate}
           className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none disabled:hover:shadow-lg"
         >
-          {isLoading ? 'Creating Account...' : 'Create Account & Verify'}
+          {isLoading ? 'Verifying Age...' : 'Verify Age & Continue'}
         </button>
       </form>
     </div>

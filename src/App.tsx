@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { UserProvider } from './contexts/UserContext';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
+import AuthScreen from './components/Auth/AuthScreen';
 import OnboardingFlow from './components/Onboarding/OnboardingFlow';
 import Dashboard from './components/Dashboard/Dashboard';
 import Chat from './components/Chat/Chat';
@@ -25,7 +26,7 @@ function AppContent() {
   }
 
   if (!user) {
-    return <OnboardingFlow />;
+    return <AuthScreen />;
   }
 
   if (!profile?.onboardingComplete) {

@@ -10,9 +10,10 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  resetPassword: (email: string) => Promise<void>;
   verifyAge: (birthDate: string) => Promise<boolean>;
   verifyIdentity: (selfieData: string, idData: string) => Promise<boolean>;
 }
@@ -70,34 +71,110 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   };
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<void> => {
     setLoading(true);
-    // Simulate login
-    const mockUser: User = {
-      id: 'user_' + Date.now(),
-      email,
-      verified: true,
-      createdAt: new Date().toISOString()
-    };
     
-    localStorage.setItem('qupid_user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    setLoading(false);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Check if user exists (simulate checking against database)
+      const existingUsers = JSON.parse(localStorage.getItem('qupid_registered_users') || '[]');
+      const existingUser = existingUsers.find((u: any) => u.email === email);
+      
+      if (!existingUser) {
+        throw new Error('No account found with this email address');
+      }
+      
+      // Simple password check (in real app, this would be hashed)
+      if (existingUser.password !== password) {
+        throw new Error('Incorrect password');
+      }
+      
+      const mockUser: User = {
+        id: existingUser.id,
+        email: existingUser.email,
+        verified: existingUser.verified,
+        createdAt: existingUser.createdAt
+      };
+      
+      // Store session
+      const sessionData = { ...mockUser, rememberMe };
+      localStorage.setItem('qupid_user', JSON.stringify(sessionData));
+      
+      setUser(mockUser);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signup = async (email: string, password: string): Promise<void> => {
     setLoading(true);
-    // Simulate signup
-    const mockUser: User = {
-      id: 'user_' + Date.now(),
-      email,
-      verified: false,
-      createdAt: new Date().toISOString()
-    };
     
-    localStorage.setItem('qupid_user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    setLoading(false);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check for existing users
+      const existingUsers = JSON.parse(localStorage.getItem('qupid_registered_users') || '[]');
+      const existingUser = existingUsers.find((u: any) => u.email === email);
+      
+      if (existingUser) {
+        throw new Error('An account with this email already exists');
+      }
+      
+      const newUser = {
+        id: 'user_' + Date.now(),
+        email,
+        password, // In real app, this would be hashed
+        verified: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Store in "database"
+      existingUsers.push(newUser);
+      localStorage.setItem('qupid_registered_users', JSON.stringify(existingUsers));
+      
+      const mockUser: User = {
+        id: newUser.id,
+        email: newUser.email,
+        verified: newUser.verified,
+        createdAt: newUser.createdAt
+      };
+      
+      localStorage.setItem('qupid_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string): Promise<void> => {
+    setLoading(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Check if user exists
+      const existingUsers = JSON.parse(localStorage.getItem('qupid_registered_users') || '[]');
+      const existingUser = existingUsers.find((u: any) => u.email === email);
+      
+      if (!existingUser) {
+        throw new Error('No account found with this email address');
+      }
+      
+      // In a real app, this would send an email with a reset token
+      console.log(`Password reset email sent to ${email}`);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = (): void => {
@@ -112,6 +189,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     signup,
     logout,
+    resetPassword,
     verifyAge,
     verifyIdentity
   };
